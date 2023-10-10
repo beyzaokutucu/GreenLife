@@ -1,0 +1,241 @@
+<html>
+<head>
+<title>MessageActivity.java</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #808080;}
+.s3 { color: #6897bb;}
+.s4 { color: #6a8759;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+MessageActivity.java</font>
+</center></td></tr></table>
+<pre><span class="s0">package </span><span class="s1">com.okutu.splash</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">android.content.Intent</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.os.Bundle</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.view.View</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ArrayAdapter</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.Button</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.EditText</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.ListView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">android.widget.TextView</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">androidx.appcompat.app.AppCompatActivity</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.Fragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">androidx.fragment.app.FragmentTransaction</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">com.google.android.material.bottomnavigation.BottomNavigationView</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseAuth</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.auth.FirebaseUser</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.DatabaseReference</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.google.firebase.database.FirebaseDatabase</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.okutu.splash.Fragment.KullanicilarFragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.okutu.splash.Fragment.MesajlarFragment</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">com.okutu.splash.Models.User</span><span class="s0">;</span>
+
+<span class="s0">import </span><span class="s1">java.util.ArrayList</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.Timer</span><span class="s0">;</span>
+<span class="s0">import </span><span class="s1">java.util.TimerTask</span><span class="s0">;</span>
+
+<span class="s0">public class </span><span class="s1">MessageActivity </span><span class="s0">extends </span><span class="s1">AppCompatActivity {</span>
+
+    <span class="s0">private </span><span class="s1">KullanicilarFragment kullanicilarFragment</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">MesajlarFragment mesajlarFragment</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">FragmentTransaction fragmentTransaction</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">ListView messageListView</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">EditText messageInput</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">Button sendButton</span><span class="s0">;</span>
+
+    <span class="s0">private </span><span class="s1">ArrayList&lt;String&gt; messages</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">ArrayAdapter&lt;String&gt; messageAdapter</span><span class="s0">;</span>
+    <span class="s0">private </span><span class="s1">TextView targetName</span><span class="s0">;</span>
+
+    <span class="s0">private </span><span class="s1">FirebaseAuth mAuth</span><span class="s0">;</span>
+    <span class="s0">private void </span><span class="s1">init(){</span>
+        <span class="s1">kullanicilarFragment=</span><span class="s0">new </span><span class="s1">KullanicilarFragment()</span><span class="s0">;</span>
+        <span class="s1">mesajlarFragment=</span><span class="s0">new </span><span class="s1">MesajlarFragment()</span><span class="s0">;</span>
+        <span class="s1">mAuth = FirebaseAuth.getInstance()</span><span class="s0">;</span>
+
+        <span class="s1">fragmentiAyarla(kullanicilarFragment)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onCreate(Bundle savedInstanceState) {</span>
+        <span class="s0">super</span><span class="s1">.onCreate(savedInstanceState)</span><span class="s0">;</span>
+        <span class="s1">setContentView(R.layout.chat)</span><span class="s0">;</span>
+        <span class="s1">init()</span><span class="s0">;</span>
+
+        <span class="s1">targetName = findViewById(R.id.titleText)</span><span class="s0">;</span>
+
+        <span class="s2">// Mesaj listesini ve adaptörünü oluşturun</span>
+        <span class="s1">messages = </span><span class="s0">new </span><span class="s1">ArrayList&lt;&gt;()</span><span class="s0">;</span>
+        <span class="s1">messageAdapter = </span><span class="s0">new </span><span class="s1">ArrayAdapter&lt;&gt;(</span><span class="s0">this, </span><span class="s1">android.R.layout.simple_list_item_1</span><span class="s0">, </span><span class="s1">messages)</span><span class="s0">;</span>
+
+
+        <span class="s2">// Mesaj listesini ve adaptörünü görüntüleyiciye bağlayın</span>
+        <span class="s1">messageListView = findViewById(R.id.messageList)</span><span class="s0">;</span>
+        <span class="s1">messageListView.setAdapter(messageAdapter)</span><span class="s0">;</span>
+
+        <span class="s2">// Mesaj gönderme alanını ve düğmeyi alın</span>
+        <span class="s1">messageInput = findViewById(R.id.messageInput)</span><span class="s0">;</span>
+        <span class="s1">sendButton = findViewById(R.id.sendButton)</span><span class="s0">;</span>
+
+        <span class="s2">// Gönder düğmesine tıklama olayını ayarlayın</span>
+        <span class="s1">sendButton.setOnClickListener(</span><span class="s0">new </span><span class="s1">View.OnClickListener() {</span>
+            <span class="s1">@Override</span>
+            <span class="s0">public void </span><span class="s1">onClick(View v) {</span>
+                <span class="s1">sendMessage()</span><span class="s0">;</span>
+            <span class="s1">}</span>
+        <span class="s1">})</span><span class="s0">;</span>
+
+        <span class="s2">// Mesajları alma işlemini başlatmak için bir metodu çağırın</span>
+        <span class="s1">startMessageListener()</span><span class="s0">;</span>
+        <span class="s1">BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigationView)</span><span class="s0">;</span>
+        <span class="s1">bottomNavigationView.setOnNavigationItemSelectedListener(item -&gt; {</span>
+            <span class="s0">switch </span><span class="s1">(item.getItemId()) {</span>
+                <span class="s0">case </span><span class="s1">R.id.home:</span>
+                    <span class="s1">startActivity(</span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">,</span><span class="s1">home.</span><span class="s0">class</span><span class="s1">))</span><span class="s0">;</span>
+                    <span class="s1">overridePendingTransition(</span><span class="s3">0</span><span class="s0">, </span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">return true;</span>
+                <span class="s0">case </span><span class="s1">R.id.friend:</span>
+                    <span class="s1">startActivity(</span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">,</span><span class="s1">friend.</span><span class="s0">class</span><span class="s1">))</span><span class="s0">;</span>
+                    <span class="s1">overridePendingTransition(</span><span class="s3">0</span><span class="s0">, </span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">return true;</span>
+                <span class="s0">case </span><span class="s1">R.id.chat:</span>
+                    <span class="s1">fragmentiAyarla(kullanicilarFragment)</span><span class="s0">;</span>
+                    <span class="s0">return true;</span>
+                <span class="s0">case </span><span class="s1">R.id.person:</span>
+                    <span class="s1">startActivity(</span><span class="s0">new </span><span class="s1">Intent(getApplicationContext()</span><span class="s0">,</span><span class="s1">ProfileActivity.</span><span class="s0">class</span><span class="s1">))</span><span class="s0">;</span>
+                    <span class="s1">overridePendingTransition(</span><span class="s3">0</span><span class="s0">, </span><span class="s3">0</span><span class="s1">)</span><span class="s0">;</span>
+                    <span class="s0">return true;</span>
+            <span class="s1">}</span>
+            <span class="s0">return false;</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s1">TimerTask messageTask = </span><span class="s0">new </span><span class="s1">TimerTask() {</span>
+        <span class="s1">@Override</span>
+        <span class="s0">public void </span><span class="s1">run() {</span>
+            <span class="s1">runOnUiThread(() -&gt; refreshChat())</span><span class="s0">;</span>
+        <span class="s1">}</span>
+    <span class="s1">}</span><span class="s0">;</span>
+    <span class="s1">Timer timer</span><span class="s0">;</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onResume() {</span>
+        <span class="s0">super</span><span class="s1">.onResume()</span><span class="s0">;</span>
+        <span class="s1">timer = </span><span class="s0">new </span><span class="s1">Timer()</span><span class="s0">;</span>
+        <span class="s1">timer.scheduleAtFixedRate(messageTask</span><span class="s0">, </span><span class="s3">200</span><span class="s0">, </span><span class="s3">1000</span><span class="s1">)</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s1">@Override</span>
+    <span class="s0">protected void </span><span class="s1">onPause() {</span>
+        <span class="s0">super</span><span class="s1">.onPause()</span><span class="s0">;</span>
+        <span class="s1">timer.cancel()</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">refreshChat() {</span>
+        <span class="s1">FirebaseUser user = mAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference().child(</span><span class="s4">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">DatabaseReference chatsReferece = FirebaseDatabase.getInstance().getReference().child(</span><span class="s4">&quot;chats&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">usersReference.child(user.getUid()).child(</span><span class="s4">&quot;chatId&quot;</span><span class="s1">).get().addOnSuccessListener( id -&gt; {</span>
+            <span class="s1">String chatId = id.getValue(String.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">chatsReferece.child(chatId).get().addOnSuccessListener(chatObject -&gt; {</span>
+                <span class="s1">Chat chat = chatObject.getValue(Chat.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(chat.getMessages() != </span><span class="s0">null</span><span class="s1">) {</span>
+                    <span class="s0">for </span><span class="s1">(</span><span class="s0">int </span><span class="s1">i = messages.size()</span><span class="s0">; </span><span class="s1">i &lt; chat.getMessages().size()</span><span class="s0">; </span><span class="s1">i++) {</span>
+                        <span class="s1">messages.add(chat.getMessages().get(i))</span><span class="s0">;</span>
+                    <span class="s1">}</span>
+                <span class="s1">}</span>
+                <span class="s1">String hedefId = </span><span class="s4">&quot;&quot;</span><span class="s0">;</span>
+                <span class="s0">if </span><span class="s1">(user.getUid() != chat.getKullaniciId1()) hedefId = chat.getKullaniciId2()</span><span class="s0">;</span>
+                <span class="s0">else if </span><span class="s1">(user.getUid() != chat.getKullaniciId2()) hedefId = chat.getKullaniciId1()</span><span class="s0">;</span>
+                <span class="s1">usersReference.child(hedefId).get().addOnSuccessListener( snapshot -&gt; {</span>
+                    <span class="s1">String name = snapshot.child(</span><span class="s4">&quot;userName&quot;</span><span class="s1">).getValue(String.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+
+                    <span class="s1">targetName.setText(name)</span><span class="s0">;</span>
+                <span class="s1">})</span><span class="s0">;</span>
+            <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">})</span><span class="s0">;</span>
+    <span class="s1">}</span>
+
+
+    <span class="s0">private void </span><span class="s1">startMessageListener() {</span>
+        <span class="s2">// Mesaj alma işlemini burada başlatın</span>
+
+        <span class="s2">// Örnek olarak, bir TimerTask kullanarak rastgele mesaj alabilirsiniz</span>
+        <span class="s2">/*TimerTask messageTask = new TimerTask() { 
+            @Override 
+            public void run() { 
+                // Yeni bir mesaj almak için bir işlem yapabilirsiniz 
+                // Örnek olarak, rastgele bir mesaj oluşturalım 
+                String receivedMessage = &quot;Bu bir rastgele mesajdır.&quot;; 
+ 
+                // UI işlemlerini ana iş parçacığı üzerinde yapmak için runOnUiThread kullanın 
+                runOnUiThread(new Runnable() { 
+                    @Override 
+                    public void run() { 
+                        // Alınan mesajı listeye ekle ve adaptörü güncelle 
+                        messages.add(receivedMessage); 
+                        messageAdapter.notifyDataSetChanged(); 
+                    } 
+                }); 
+            } 
+        }; 
+ 
+                 // TimerTask'i belirli aralıklarla çalıştırmak için bir Timer kullanın 
+        Timer timer = new Timer(); 
+                 // İlk mesajı hemen almak için 0 ms gecikme süresi verin, ardından 5 saniyede bir tekrarlayın 
+        timer.scheduleAtFixedRate(messageTask, 0, 5000); 
+        */</span>
+    <span class="s1">}</span>
+
+    <span class="s0">private void </span><span class="s1">sendMessage() {</span>
+        <span class="s1">String message = messageInput.getText().toString().trim()</span><span class="s0">;</span>
+        <span class="s0">if </span><span class="s1">(message.isEmpty()) </span><span class="s0">return;</span>
+
+
+        <span class="s1">FirebaseUser user = mAuth.getCurrentUser()</span><span class="s0">;</span>
+        <span class="s1">DatabaseReference usersReference = FirebaseDatabase.getInstance().getReference().child(</span><span class="s4">&quot;Users&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">DatabaseReference chatsReferece = FirebaseDatabase.getInstance().getReference().child(</span><span class="s4">&quot;chats&quot;</span><span class="s1">)</span><span class="s0">;</span>
+        <span class="s1">usersReference.child(user.getUid()).get().addOnSuccessListener( kullaniciObject -&gt; {</span>
+            <span class="s1">Kullanici kullanici = kullaniciObject.getValue(Kullanici.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+            <span class="s1">messages.add(kullanici.getUserName() + </span><span class="s4">&quot;: &quot; </span><span class="s1">+ message)</span><span class="s0">;</span>
+            <span class="s1">chatsReferece.child(kullanici.getChatId()).get().addOnSuccessListener(chatObject -&gt; {</span>
+                <span class="s1">Chat chat = chatObject.getValue(Chat.</span><span class="s0">class</span><span class="s1">)</span><span class="s0">;</span>
+                <span class="s1">chat.setMessages(messages)</span><span class="s0">;</span>
+                <span class="s1">chatsReferece.child(kullanici.getChatId()).setValue(chat)</span><span class="s0">;</span>
+            <span class="s1">})</span><span class="s0">;</span>
+        <span class="s1">})</span><span class="s0">;</span>
+<span class="s2">//        usersReference.child(user.getUid()).child(&quot;chatId&quot;).get().addOnSuccessListener( id -&gt; {</span>
+<span class="s2">//            String chatId = id.getValue(String.class);</span>
+<span class="s2">//            chatsReferece.child(chatId).get().addOnSuccessListener(chatObject -&gt; {</span>
+<span class="s2">//                Chat chat = chatObject.getValue(Chat.class);</span>
+<span class="s2">//                chat.setMessages(messages);</span>
+<span class="s2">//                chatsReferece.child(chatId).setValue(chat);</span>
+<span class="s2">//            });</span>
+<span class="s2">//        });</span>
+
+        <span class="s2">// Mesaj gönderildikten sonra giriş alanını temizleyin</span>
+        <span class="s1">messageInput.setText(</span><span class="s4">&quot;&quot;</span><span class="s1">)</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+    <span class="s0">private void </span><span class="s1">fragmentiAyarla(Fragment fragment){</span>
+
+        <span class="s1">fragmentTransaction = getSupportFragmentManager().beginTransaction()</span><span class="s0">;</span>
+        <span class="s1">fragmentTransaction.replace(R.id.chat</span><span class="s0">,</span><span class="s1">fragment)</span><span class="s0">;</span>
+        <span class="s1">fragmentTransaction.commit()</span><span class="s0">;</span>
+
+    <span class="s1">}</span>
+<span class="s1">}</span>
+</pre>
+</body>
+</html>

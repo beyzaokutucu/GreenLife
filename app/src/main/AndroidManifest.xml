@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        tools:ignore="WrongManifestParent" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Splash"
+        tools:targetApi="31">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="" />
+        <meta-data
+            android:name="com.google.firebase.firestore.default_config"
+            android:value="@string/google_app_id" />
+
+        <activity
+            android:name=".Activities.MainActivity"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.Splash">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".Activities.Intro.SplashActivity1" />
+        <activity android:name=".Activities.Intro.SplashActivity2" />
+        <activity android:name=".Activities.MainMenu.MainMenuActivity" />
+        <activity android:name=".Activities.Auth.RegisterActivity" />
+        <activity android:name=".Activities.Auth.Login.QuestionActivity1" />
+        <activity android:name=".Activities.Auth.Login.QuestionActivity2" />
+        <activity android:name=".Activities.MainMenu.FindFriendActivity" />
+        <activity android:name=".Activities.MainMenu.ProfileActivity" />
+        <activity android:name=".Activities.MainMenu.Profile.EditProfileActivity" />
+        <activity android:name=".Activities.MainMenu.SettingsActivity" />
+        <activity android:name=".Activities.MainMenu.Profile.ChangePasswordActivity" />
+        <activity android:name=".Activities.MainMenu.Message.MessageActivity" />
+        <activity android:name=".Activities.MainMenu.Profile.AboutUsActivity" />
+        <activity android:name=".Activities.Auth.LoginActivity" />
+        <activity android:name=".Activities.MainMenu.Profile.ChangePhotoActivity" />
+
+
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
+    </application>
+
+</manifest>

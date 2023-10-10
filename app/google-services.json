@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "176334307152",
+    "project_id": "greenlife-dc85c",
+    "storage_bucket": "greenlife-dc85c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176334307152:android:dccf81f636d3ab66387655",
+        "android_client_info": {
+          "package_name": "com.okutu.splash"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176334307152-rtf4gk4rpb7v6q0v15j4pi081iucvr54.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLltLVmfp_E4S15NNbAUaGwrG29PDADg4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "176334307152-rtf4gk4rpb7v6q0v15j4pi081iucvr54.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

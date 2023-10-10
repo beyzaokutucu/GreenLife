@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="textInputLayoutEmail" type="id" />
+    <item name="imageView11" type="id" />
+    <item name="textInputLayoutPassword" type="id" />
+    <item name="btn_giris" type="id" />
+    <item name="btn_geri" type="id" />
+    <item name="listViewMessages" type="id" />
+    <item name="editTextMessage" type="id" />
+    <item name="buttonSend" type="id" />
+    <item name="buttonLogout" type="id" />
+    <item name="kayit_ol_linear" type="id" />
+</resources>
